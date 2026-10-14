@@ -401,7 +401,7 @@ MonoBehaviour:
   minDistance: 0.5
   height: 2
   smoothTime: 0.12
-  mouseSensitivity: 3
+  mouseSensitivity: 1
   minPitch: -20
   maxPitch: 80
   obstacleLayers:
