@@ -28,8 +28,8 @@ public class ThirdPersonCamera : MonoBehaviour
     private void Start()
     {
         // 마우스 커서 잠금 및 숨김 (필요 시 주석 해제)
-        // Cursor.lockState = CursorLockMode.Locked;
-        // Cursor.visible = false;
+         Cursor.lockState = CursorLockMode.Locked;
+         Cursor.visible = false;
 
         Vector3 angles = transform.eulerAngles;
         currentYaw = angles.y;
