@@ -138,9 +138,12 @@ GameObject:
   m_Component:
   - component: {fileID: 103599441860339050}
   - component: {fileID: 1633181678931310520}
+  - component: {fileID: -3924971785837830354}
+  - component: {fileID: 5357998583391665676}
+  - component: {fileID: 445557959987597237}
   m_Layer: 0
   m_Name: Steve
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -185,6 +188,62 @@ MonoBehaviour:
   speed: 8
   angle: 35
   isWalking: 1
+--- !u!114 &-3924971785837830354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8578906274988494340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d749a4bbae9440548a6b71c2038e2cb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyChaser
+  moveSpeed: 2
+  detectRange: 15
+  attackRange: 1.5
+  visualModel: {fileID: 103599441860339050}
+  modelForward: 2
+  rotationSpeed: 720
+  damage: 1
+  attackCooldown: 1
+--- !u!65 &5357998583391665676
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8578906274988494340}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 2.3812783, z: 1.40316}
+  m_Center: {x: 0, y: 1.2897166, z: 0.0016247375}
+--- !u!114 &445557959987597237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8578906274988494340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49d9964f3b0cbc5458cfa26bdfa7ae39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+  maxHp: 1
+  currentHp: 0
+  hpSlider: {fileID: 0}
 --- !u!1001 &3651103989446286660
 PrefabInstance:
   m_ObjectHideFlags: 0

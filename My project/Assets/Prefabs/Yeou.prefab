@@ -96,6 +96,37 @@ Transform:
   - {fileID: 1588848387782390601}
   m_Father: {fileID: 6296677909406894145}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5825800486437188058
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6045726528243434472}
+  m_Layer: 0
+  m_Name: FirePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6045726528243434472
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5825800486437188058}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.131, y: 0.462, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6296677909406894145}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6730664752915174813
 GameObject:
   m_ObjectHideFlags: 0
@@ -106,9 +137,14 @@ GameObject:
   m_Component:
   - component: {fileID: 6296677909406894145}
   - component: {fileID: 1888591711269581377}
+  - component: {fileID: 2198898795549486015}
+  - component: {fileID: 692454194658216359}
+  - component: {fileID: 7573233739492497017}
+  - component: {fileID: 8267057726360505074}
+  - component: {fileID: 9094031799191934556}
   m_Layer: 0
   m_Name: Yeou
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -133,6 +169,7 @@ Transform:
   - {fileID: 4154426928753899504}
   - {fileID: 3566539335214953339}
   - {fileID: 1146141153416691081}
+  - {fileID: 6045726528243434472}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &1888591711269581377
@@ -157,6 +194,114 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!65 &2198898795549486015
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6730664752915174813}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.0686424, y: 0.8371611, z: 1}
+  m_Center: {x: 0.020008683, y: 0.48044488, z: 0}
+--- !u!143 &692454194658216359
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6730664752915174813}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0.84, z: 0}
+--- !u!114 &7573233739492497017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6730664752915174813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68578af2b00c74f47936113028f21ffa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FoxController
+  walkSpeed: 4
+  runSpeed: 7
+  gravity: -20
+  foxModel: {fileID: 6296677909406894145}
+  cameraTransform: {fileID: 0}
+  horizontalSensitivity: 0.15
+  verticalSensitivity: 0.15
+  invertY: 0
+  minCameraAngle: -20
+  maxCameraAngle: 40
+  animator: {fileID: 1888591711269581377}
+  speedParameter: Speed
+--- !u!114 &8267057726360505074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6730664752915174813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49d9964f3b0cbc5458cfa26bdfa7ae39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+  maxHp: 3
+  currentHp: 0
+  hpSlider: {fileID: 0}
+--- !u!114 &9094031799191934556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6730664752915174813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 043c7b6e61a9ee1408544561aa466bc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FoxShooter
+  bulletPrefab: {fileID: 8364002737742134818, guid: 73ce40e6289268c42a43896c82804427, type: 3}
+  firePoint: {fileID: 6045726528243434472}
+  fireRate: 0.25
+  bulletSpeed: 20
+  bulletDamage: 1
+  playerCamera: {fileID: 0}
+  aimDistance: 100
+  aimLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  automaticFire: 1
 --- !u!1 &7791306904149527931
 GameObject:
   m_ObjectHideFlags: 0
