@@ -44,6 +44,8 @@ public class DeerFoxMenuController : MonoBehaviour
     {
         if (Mouse.current == null || neckBase == null || head == null) return;
 
+        Plane mousePlane = new Plane(-mainCamera.transform.forward, neckBase.position);
+
         Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
         Ray ray = mainCamera.ScreenPointToRay(mouseScreenPos);
         Vector3 targetWorldPos = head.position;
