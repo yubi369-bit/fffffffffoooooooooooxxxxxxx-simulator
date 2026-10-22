@@ -12,7 +12,21 @@ public class MainMenuUIManager : MonoBehaviour
 
     public GameObject settingsPanel;
 
-    public void Start()
+    public static MainMenuUIManager Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void Start()
     {
         if (settingsPanel != null)
         {
@@ -61,10 +75,6 @@ public class MainMenuUIManager : MonoBehaviour
         if (settingButton != null)
         {
             settingButton.SetActive(true);
-        }
-        if (settingsPanel != null)
-        {
-            settingsPanel.SetActive(false);
         }
     }
 }

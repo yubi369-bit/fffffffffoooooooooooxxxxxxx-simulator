@@ -713,6 +713,7 @@ GameObject:
   m_Component:
   - component: {fileID: 894653649}
   - component: {fileID: 894653650}
+  - component: {fileID: 894653651}
   m_Layer: 5
   m_Name: SettingPanels
   m_TagString: Untagged
@@ -734,8 +735,8 @@ RectTransform:
   m_Children:
   - {fileID: 2040196872}
   - {fileID: 1480620115}
-  - {fileID: 2140265248}
   - {fileID: 424418204}
+  - {fileID: 2140265248}
   - {fileID: 2085729457}
   m_Father: {fileID: 2108782556}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -824,6 +825,71 @@ MonoBehaviour:
     loopType: 0
     loopCount: -1
     loopDelayInterval: 3
+    originPos: {x: 0, y: 0}
+--- !u!114 &894653651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 894653648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35eedabad45ac1843a989b2a0e43131b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SettingPanelCloseAnimation
+  uiElements:
+  - elementName: Panel-Background
+    targetRect: {fileID: 2040196872}
+    useMove: 1
+    exitOffset: {x: 0, y: -2160}
+    moveDuration: 0.5
+    moveDelay: 0
+    moveEase: 19
+    useScale: 0
+    targetScale: {x: 0, y: 0, z: 0}
+    scaleDuration: 0
+    scaleDelay: 0
+    scaleEase: 0
+    originPos: {x: 0, y: 0}
+  - elementName: Panel-white
+    targetRect: {fileID: 1480620115}
+    useMove: 1
+    exitOffset: {x: 1500, y: 0}
+    moveDuration: 0.6
+    moveDelay: 0
+    moveEase: 19
+    useScale: 1
+    targetScale: {x: 1, y: 7, z: 1}
+    scaleDuration: 0.6
+    scaleDelay: 0
+    scaleEase: 0
+    originPos: {x: 0, y: 0}
+  - elementName: Panel-Text
+    targetRect: {fileID: 424418204}
+    useMove: 1
+    exitOffset: {x: 0, y: 2180}
+    moveDuration: 0.6
+    moveDelay: 0
+    moveEase: 19
+    useScale: 0
+    targetScale: {x: 0, y: 0, z: 0}
+    scaleDuration: 0
+    scaleDelay: 0
+    scaleEase: 0
+    originPos: {x: 0, y: 0}
+  - elementName: Panel-Fox
+    targetRect: {fileID: 2140265248}
+    useMove: 1
+    exitOffset: {x: 0, y: 2180}
+    moveDuration: 0.6
+    moveDelay: 0
+    moveEase: 19
+    useScale: 0
+    targetScale: {x: 0, y: 0, z: 0}
+    scaleDuration: 0
+    scaleDelay: 0
+    scaleEase: 0
     originPos: {x: 0, y: 0}
 --- !u!1 &920559025
 GameObject:
@@ -2073,14 +2139,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.6666667}
+  m_Color: {r: 1, g: 0.4572595, b: 0, a: 0.23529412}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: df11ad262ce82594d8d3c67b2c25aab2, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2439,9 +2505,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 990297101}
-        m_TargetAssemblyTypeName: MainMenuUIManager, Assembly-CSharp
-        m_MethodName: OnBackButtonClicked
+      - m_Target: {fileID: 990297103}
+        m_TargetAssemblyTypeName: MenuCameraController, Assembly-CSharp
+        m_MethodName: OnClickBackButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2451,9 +2517,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 990297103}
-        m_TargetAssemblyTypeName: MenuCameraController, Assembly-CSharp
-        m_MethodName: OnClickBackButton
+      - m_Target: {fileID: 894653651}
+        m_TargetAssemblyTypeName: SettingPanelCloseAnimation, Assembly-CSharp
+        m_MethodName: ClosePanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
