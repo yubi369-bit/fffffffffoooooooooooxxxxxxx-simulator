@@ -20,20 +20,25 @@ public class SettingPanelCloseAnimation : MonoBehaviour
         public float scaleDuration = 0.3f;
         public float scaleDelay = 0f;
         public Ease scaleEase = Ease.InBack;
+        [Header("퇴장 회전(Rotation) 애니메이션")]
+        public bool useRotate = false;
+        [Tooltip("퇴장할 때 도달할 Z축 각도 (예: 180, 360, -90)")]
+        public float exitRotationZ = 180f;
+        public float rotateDuration = 0.4f;
+        public float rotateDelay = 0f;
+        public Ease rotateEase = Ease.InBack;
         [HideInInspector] public Vector2 originPos;
+        [HideInInspector] public Vector3 originRot;
     }
     [Header("각 부위별 퇴장 애니메이션 세팅")]
     [SerializeField] private List<UICloseElementSetting> uiElements;
     private Sequence closeSequence;
     private bool isInitialized = false;
-
-
-
     private void Awake()
     {
-        InitOriginPositions();
+        InitOriginData();
     }
-    private void InitOriginPositions()
+    private void InitOriginData()
     {
         if (isInitialized) return;
         foreach (var element in uiElements)
@@ -41,13 +46,14 @@ public class SettingPanelCloseAnimation : MonoBehaviour
             if (element.targetRect != null)
             {
                 element.originPos = element.targetRect.anchoredPosition;
+                element.originRot = element.targetRect.localEulerAngles;
             }
         }
         isInitialized = true;
     }
     public void ClosePanel()
     {
-        InitOriginPositions();
+        InitOriginData();
         DOTween.Kill(gameObject);
         closeSequence?.Kill();
         closeSequence = DOTween.Sequence();
@@ -69,15 +75,29 @@ public class SettingPanelCloseAnimation : MonoBehaviour
                                       .SetEase(element.scaleEase)
                 );
             }
+            if (element.useRotate)
+            {
+                Vector3 targetRot = new Vector3(element.originRot.x, element.originRot.y, element.exitRotationZ);
+                closeSequence.Insert(element.rotateDelay,
+                    element.targetRect.DOLocalRotate(targetRot, element.rotateDuration, RotateMode.FastBeyond360)
+                                      .SetEase(element.rotateEase)
+                );
+            }
         }
         closeSequence.SetUpdate(true);
         closeSequence.OnComplete(() =>
         {
             gameObject.SetActive(false);
-            MainMenuUIManager.Instance.OnBackButtonClicked();
+            if (MainMenuUIManager.Instance != null)
+            {
+                MainMenuUIManager.Instance.OnBackButtonClicked();
+            }
+            else
+            {
+                Debug.LogWarning("MainMenuUIManager 인스턴스를 찾을 수 없습니다.");
+            }
         });
         closeSequence.Play();
-        
     }
     private void OnDisable()
     {

@@ -20,13 +20,20 @@ public class SettingPanelAnimation : MonoBehaviour
         public float scaleDuration = 0.4f;
         public float scaleDelay = 0f;
         public Ease scaleEase = Ease.OutBack;
+        [Header("회전(Rotation) 애니메이션")]
+        public bool useRotate = false;
+        [Tooltip("등장 전 시작할 Z축 각도 (예: -180, 360)")]
+        public float startRotationZ = 180f;
+        public float rotateDuration = 0.5f;
+        public float rotateDelay = 0f;
+        public Ease rotateEase = Ease.OutBack;
         [Header("이동 애니메이션 자체 반복")]
         public bool isLoopMove = false;
         public LoopType loopType = LoopType.Restart;
         public int loopCount = -1;
-        [Tooltip("도착지에 도착한 뒤 다음 반복까지 머무르는 쉼(대기) 시간(초)")]
         public float loopDelayInterval = 0.5f;
         [HideInInspector] public Vector2 originPos;
+        [HideInInspector] public Vector3 originRot;
         [HideInInspector] public Sequence loopSequence;
     }
     [Header("각 부위별 애니메이션 세팅")]
@@ -35,9 +42,9 @@ public class SettingPanelAnimation : MonoBehaviour
     private bool isInitialized = false;
     private void Awake()
     {
-        InitOriginPositions();
+        InitOriginData();
     }
-    private void InitOriginPositions()
+    private void InitOriginData()
     {
         if (isInitialized) return;
         foreach (var element in uiElements)
@@ -45,13 +52,14 @@ public class SettingPanelAnimation : MonoBehaviour
             if (element.targetRect != null)
             {
                 element.originPos = element.targetRect.anchoredPosition;
+                element.originRot = element.targetRect.localEulerAngles;
             }
         }
         isInitialized = true;
     }
     private void OnEnable()
     {
-        InitOriginPositions();
+        InitOriginData();
         PlayOpenAnimation();
     }
     public void PlayOpenAnimation()
@@ -74,9 +82,7 @@ public class SettingPanelAnimation : MonoBehaviour
                                           .SetEase(element.moveEase)
                     );
                     if (element.loopDelayInterval > 0)
-                    {
                         element.loopSequence.AppendInterval(element.loopDelayInterval);
-                    }
                     element.loopSequence.SetLoops(element.loopCount, element.loopType)
                                         .SetUpdate(true);
                 }
@@ -95,6 +101,13 @@ public class SettingPanelAnimation : MonoBehaviour
                                       .SetEase(element.scaleEase)
                 );
             }
+            if (element.useRotate)
+            {
+                mySequence.Insert(element.rotateDelay,
+                    element.targetRect.DOLocalRotate(element.originRot, element.rotateDuration, RotateMode.FastBeyond360)
+                                      .SetEase(element.rotateEase)
+                );
+            }
         }
         mySequence.SetUpdate(true);
         mySequence.Play();
@@ -105,13 +118,11 @@ public class SettingPanelAnimation : MonoBehaviour
         {
             if (element.targetRect == null) continue;
             if (element.useMove)
-            {
                 element.targetRect.anchoredPosition = element.originPos + element.startOffset;
-            }
             if (element.useScale)
-            {
                 element.targetRect.localScale = element.startScale;
-            }
+            if (element.useRotate)
+                element.targetRect.localEulerAngles = new Vector3(element.originRot.x, element.originRot.y, element.startRotationZ);
         }
     }
     private void KillAllTweens()
