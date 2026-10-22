@@ -12,6 +12,14 @@ public class MainMenuUIManager : MonoBehaviour
 
     public GameObject settingsPanel;
 
+    public void Start()
+    {
+        if (settingsPanel != null)
+        {
+            settingsPanel.SetActive(false);
+        }
+    }
+
     public void OnStartButtonClicked()
     {
         SceneManager.LoadScene("PlayScene");
