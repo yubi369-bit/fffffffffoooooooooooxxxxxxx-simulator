@@ -827,6 +827,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1839225183}
   m_CullTransparentMesh: 1
+--- !u!1 &1953142063 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6730664752915174813, guid: 553a987d30f548b449e15410b1baa44d, type: 3}
+  m_PrefabInstance: {fileID: 2017600875}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2011276867
 GameObject:
   m_ObjectHideFlags: 0
@@ -1031,13 +1036,52 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6730664752915174813, guid: 553a987d30f548b449e15410b1baa44d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2017600878}
+    - targetCorrespondingSourceObject: {fileID: 6730664752915174813, guid: 553a987d30f548b449e15410b1baa44d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2017600877}
   m_SourcePrefab: {fileID: 100100000, guid: 553a987d30f548b449e15410b1baa44d, type: 3}
 --- !u!4 &2017600876 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6296677909406894145, guid: 553a987d30f548b449e15410b1baa44d, type: 3}
   m_PrefabInstance: {fileID: 2017600875}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2017600877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1953142063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb8f66cd4b29cf44eb01e7978efaeb9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
+  maxHealth: 100
+  currentHealth: 100
+  currentAmmo: 120
+  moveSpeed: 5
+--- !u!114 &2017600878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1953142063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3842b64850ac6146a979f5e73c984c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
+  interactRange: 3
+  interactableLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  interactKey: 101
 --- !u!1 &2028761838
 GameObject:
   m_ObjectHideFlags: 0

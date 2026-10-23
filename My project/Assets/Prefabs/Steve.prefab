@@ -141,7 +141,8 @@ GameObject:
   - component: {fileID: -3924971785837830354}
   - component: {fileID: 5357998583391665676}
   - component: {fileID: 445557959987597237}
-  m_Layer: 0
+  - component: {fileID: 8095968026314940740}
+  m_Layer: 6
   m_Name: Steve
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -244,6 +245,22 @@ MonoBehaviour:
   maxHp: 1
   currentHp: 0
   hpSlider: {fileID: 0}
+--- !u!114 &8095968026314940740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8578906274988494340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fa6499ac4f967743b9d33c5aff06556, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LootableEnemy
+  rewardType: 0
+  rewardValue: 30
+  interactionDistance: 3
+  interactPrompt: Press [E] to Search Body
 --- !u!1001 &3651103989446286660
 PrefabInstance:
   m_ObjectHideFlags: 0
