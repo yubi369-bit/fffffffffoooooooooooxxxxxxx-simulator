@@ -12,6 +12,11 @@ public class MainMenuUIManager : MonoBehaviour
 
     public GameObject settingsPanel;
 
+    public AudioClip mainMenuBGM;
+
+    public AudioClip OpenSettingSFX;
+    public AudioClip CloseSettingSFX;
+
     public static MainMenuUIManager Instance { get; private set; }
 
     private void Awake()
@@ -32,6 +37,8 @@ public class MainMenuUIManager : MonoBehaviour
         {
             settingsPanel.SetActive(false);
         }
+
+        AudioManager.Instance.PlayBGM(mainMenuBGM);
     }
 
     public void OnStartButtonClicked()
@@ -76,5 +83,17 @@ public class MainMenuUIManager : MonoBehaviour
         {
             settingButton.SetActive(true);
         }
+    }
+
+    //설정창 열었을떄 들리는 효과음
+    public void OpenSettingSFXPlay()
+    {
+        AudioManager.Instance.PlaySFX(OpenSettingSFX);
+    }
+
+    //설정창 닫았을떄 들리는 효과음
+    public void CloseSttingSFXPlay()
+    {
+        AudioManager.Instance.PlaySFX(CloseSettingSFX);
     }
 }
