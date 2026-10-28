@@ -34,7 +34,7 @@ public class Health : MonoBehaviour
         if (CompareTag("Player"))
         {
             Debug.Log("게임 오버");
-            Time.timeScale = 0f;
+            GameManager.instance.GameOver();
         }
         else
         {

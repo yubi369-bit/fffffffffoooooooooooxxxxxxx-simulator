@@ -34,6 +34,7 @@ public class FoxController : MonoBehaviour
     public Animator animator;
     public string speedParameter = "Speed";
 
+
     private CharacterController controller;
 
     private float cameraYaw;
@@ -45,6 +46,8 @@ public class FoxController : MonoBehaviour
 
     void Start()
     {
+
+
         controller = GetComponent<CharacterController>();
 
         if (animator == null)
@@ -85,6 +88,7 @@ public class FoxController : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.instance.isGameOver) return;
         HandleCursor();
         HandleMouseLook();
         HandleMovement();
@@ -93,6 +97,7 @@ public class FoxController : MonoBehaviour
 
     void LateUpdate()
     {
+        if (GameManager.instance.isGameOver) return;
         UpdateCamera();
     }
 

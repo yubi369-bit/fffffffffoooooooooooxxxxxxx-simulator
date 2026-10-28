@@ -119,6 +119,52 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &3173747
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3173749}
+  - component: {fileID: 3173748}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &3173748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3173747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf04e2e31d6ff60478416f7aa2e25b2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  isGameOver: 0
+  gtaDeadSFX: {fileID: 8300000, guid: 14f4a607312747042982195da9636f65, type: 3}
+--- !u!4 &3173749
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3173747}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1739.9656, y: 654.98755, z: 5.20236}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &35346031
 GameObject:
   m_ObjectHideFlags: 0
@@ -1869,6 +1915,7 @@ MonoBehaviour:
   settingButton: {fileID: 1479923368}
   settingsPanel: {fileID: 894653648}
   mainMenuBGM: {fileID: 8300000, guid: 800508883a4cd4145ad1592d4ae6b712, type: 3}
+  battleBGM: {fileID: 8300000, guid: b869424c66febef4a9249fbe80f67899, type: 3}
   OpenSettingSFX: {fileID: 8300000, guid: 8327fa171808b0941b5621bcd14d1ece, type: 3}
   CloseSettingSFX: {fileID: 8300000, guid: 96bfbb4f3c64b664ca5b571e815ec7e9, type: 3}
 --- !u!4 &990297102
@@ -4109,3 +4156,4 @@ SceneRoots:
   - {fileID: 1357799833}
   - {fileID: 719592540}
   - {fileID: 397084621}
+  - {fileID: 3173749}

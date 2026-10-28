@@ -13,6 +13,7 @@ public class MainMenuUIManager : MonoBehaviour
     public GameObject settingsPanel;
 
     public AudioClip mainMenuBGM;
+    public AudioClip battleBGM;
 
     public AudioClip OpenSettingSFX;
     public AudioClip CloseSettingSFX;
@@ -43,6 +44,10 @@ public class MainMenuUIManager : MonoBehaviour
 
     public void OnStartButtonClicked()
     {
+        AudioManager.Instance.StopBGM();
+        AudioManager.Instance.PlayBGM(battleBGM);
+
+        GameManager.instance.isGameOver = false;
         SceneManager.LoadScene("PlayScene");
     }
 
