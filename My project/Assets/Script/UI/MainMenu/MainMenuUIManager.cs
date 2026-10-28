@@ -8,15 +8,20 @@ public class MainMenuUIManager : MonoBehaviour
     public Image logoImage;
     public GameObject startButton;
     public GameObject settingButton;
+    public GameObject quitButton;
 
 
     public GameObject settingsPanel;
+    public GameObject quitPanel;
+    public GameObject realQuitPanel;
+    public GameObject realRealQuitPanel;
 
     public AudioClip mainMenuBGM;
     public AudioClip battleBGM;
 
     public AudioClip OpenSettingSFX;
     public AudioClip CloseSettingSFX;
+    public AudioClip clickBTSound;
 
     public static MainMenuUIManager Instance { get; private set; }
 
@@ -37,6 +42,19 @@ public class MainMenuUIManager : MonoBehaviour
         if (settingsPanel != null)
         {
             settingsPanel.SetActive(false);
+        }
+
+        if (quitPanel != null)
+        {
+            quitPanel.SetActive(false);
+        }
+        if (realQuitPanel != null)
+        { 
+            realQuitPanel.SetActive(false); 
+        }
+        if (realRealQuitPanel != null)
+        {
+            realRealQuitPanel.SetActive(false);
         }
 
         AudioManager.Instance.PlayBGM(mainMenuBGM);
@@ -68,10 +86,17 @@ public class MainMenuUIManager : MonoBehaviour
             settingButton.SetActive(false);
         }
 
+        if (quitButton != null)
+        {
+            quitButton.SetActive(false);
+        }
+
         if (settingsPanel != null)
         {
             settingsPanel.SetActive(true);
         }
+
+        
     }
 
     public void OnBackButtonClicked()
@@ -88,6 +113,10 @@ public class MainMenuUIManager : MonoBehaviour
         {
             settingButton.SetActive(true);
         }
+        if (quitButton != null)
+        {
+            quitButton.SetActive(true);
+        }
     }
 
     //설정창 열었을떄 들리는 효과음
@@ -100,5 +129,108 @@ public class MainMenuUIManager : MonoBehaviour
     public void CloseSttingSFXPlay()
     {
         AudioManager.Instance.PlaySFX(CloseSettingSFX);
+    }
+
+    public void AllButtonClickSFX()
+    {
+        AudioManager.Instance.PlaySFX(clickBTSound);
+    }
+
+
+
+
+    public void ClickOpenQuitPanel()
+    {
+        if (logoImage != null)
+        {
+            logoImage.gameObject.SetActive(false);
+        }
+
+        if (startButton != null)
+        {
+            startButton.SetActive(false);
+        }
+
+        if (settingButton != null)
+        {
+            settingButton.SetActive(false);
+        }
+
+        if (quitButton != null)
+        {
+            quitButton.SetActive(false);
+        }
+
+        if (quitPanel != null)
+        {
+            quitPanel.SetActive(true);
+        }
+    }
+
+    public void ClickCloseQuitPanel()
+    {
+        if (logoImage != null)
+        {
+            logoImage.gameObject.SetActive(true);
+        }
+
+        if (startButton != null)
+        {
+            startButton.SetActive(true);
+        }
+
+        if (settingButton != null)
+        {
+            settingButton.SetActive(true);
+        }
+
+        if (quitButton != null)
+        {
+            quitButton.SetActive(true);
+        }
+
+        if (quitPanel != null)
+        {
+            quitPanel.SetActive(false);
+        }
+
+        if (realQuitPanel != null)
+        {
+            realQuitPanel.SetActive(false);
+        }
+
+        if (realRealQuitPanel != null)
+        {
+            realRealQuitPanel.SetActive(false);
+        }
+    }
+
+    public void RealQuitPanelOpen()
+    {
+        if (realQuitPanel != null)
+        {
+            realQuitPanel.gameObject.SetActive(true);
+        }
+        if (quitPanel != null)
+        {
+            quitPanel.gameObject.SetActive(false);
+        }
+    }
+
+    public void RealRealQuitPanelOpen()
+    {
+        if (realQuitPanel != null)
+        {
+            realQuitPanel.gameObject.SetActive(false);
+        }
+        if (realRealQuitPanel != null)
+        {
+            realRealQuitPanel.gameObject.SetActive(true);
+        }
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 }

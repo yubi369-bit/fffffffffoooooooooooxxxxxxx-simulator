@@ -22,6 +22,9 @@ public class DeerFoxMenuController : MonoBehaviour
     // 얼굴이 반대로 뒤집혀 있으므로 Y축에 180도를 기본으로 줌
     public Vector3 headRotationOffset = new Vector3(0, 180f, 0);
 
+    [Header("게임 종료 확인")]
+    public bool isQuitPanelOpen = false; 
+
     private Plane mousePlane;
 
     void Start()
@@ -37,7 +40,14 @@ public class DeerFoxMenuController : MonoBehaviour
 
     void Update()
     {
-        StretchTowardsMouse();
+        if (isQuitPanelOpen)
+        {
+            LookAtScreen();
+        }
+        else
+        {
+            StretchTowardsMouse();
+        }
     }
 
     void StretchTowardsMouse()
@@ -77,5 +87,38 @@ public class DeerFoxMenuController : MonoBehaviour
             float currentLength = Vector3.Distance(neckBase.position, head.position);
             neck.localScale = new Vector3(neckWidth, neckHeight, currentLength);
         }
+    }
+
+    void LookAtScreen()
+    {
+        if (mainCamera == null || head == null) return;
+        Vector3 dirToCamera = (mainCamera.transform.position - head.position).normalized;
+        if (dirToCamera != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(dirToCamera) * Quaternion.Euler(headRotationOffset);
+
+            head.rotation = Quaternion.Slerp(head.rotation, targetRotation, Time.deltaTime * followSpeed);
+        }
+        UpdateNeck();
+    }
+    void UpdateNeck()
+    {
+        if (neck != null && neckBase != null && head != null)
+        {
+            neck.position = (neckBase.position + head.position) * 0.5f;
+            neck.rotation = Quaternion.LookRotation(head.position - neckBase.position);
+            float currentLength = Vector3.Distance(neckBase.position, head.position);
+            neck.localScale = new Vector3(neckWidth, neckHeight, currentLength);
+        }
+    }
+
+    public void OpenQuitPanel()
+    {
+        isQuitPanelOpen = true;
+    }
+
+    public void CloseQuitPanel()
+    {
+        isQuitPanelOpen = false;
     }
 }
