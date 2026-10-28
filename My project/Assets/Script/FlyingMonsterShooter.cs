@@ -1,78 +1,210 @@
+
 using UnityEngine;
 
 public class FlyingMonsterShooter : MonoBehaviour
 {
-    [Header("사격 대상 설정")]
-    public Transform targetPlayer;          // 사격 대상 (플레이어)
+    [Header("플레이어")]
+    public Transform targetPlayer;
 
-    [Header("사격 속성")]
-    public GameObject projectilePrefab;     // 발사할 투사체 프리팹
-    public Transform firePoint;             // 총알이 발사될 위치 (입, 손, 총구 등)
-    public float fireRate = 2f;             // 발사 간격 (초 단위)
-    public float attackRange = 15f;         // 사격 가능 거리
+    [Header("총알 설정")]
+    public GameObject projectilePrefab;
+    public Transform firePoint;
 
-    [Header("시각 연출 (선택 사항)")]
+    [Header("발사 설정")]
+    public float fireRate = 2f;
+    public float attackRange = 20f;
+    public float targetHeightOffset = 1f;
+
+    [Header("애니메이션")]
     public Animator animator;
-    public string attackTriggerName = "Attack"; // 공격 애니메이션 트리거 이름
+    public bool useAttackAnimation = false;
+    public string attackTriggerName = "Attack";
 
-    private float nextFireTime = 0f;
+    [Header("디버그")]
+    public bool showDebugLogs = true;
+
+    private Health health;
+    private float nextFireTime;
 
     void Start()
     {
-        // 플레이어 자동 탐색
-        if (targetPlayer == null)
+        health = GetComponent<Health>();
+
+        FindPlayer();
+
+        if (firePoint == null)
         {
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-            if (playerObj != null) 
-                targetPlayer = playerObj.transform;
+            firePoint = transform.Find("FirePoint");
         }
 
         if (animator == null)
+        {
             animator = GetComponentInChildren<Animator>();
+        }
     }
 
     void Update()
     {
-        if (targetPlayer == null || projectilePrefab == null || firePoint == null) 
+        if (health != null && health.isEnemyDead)
             return;
 
-        float distance = Vector3.Distance(transform.position, targetPlayer.position);
-
-        // 공격 범위 내에 들어오고 발사 쿨타임이 채워졌을 때
-        if (distance <= attackRange && Time.time >= nextFireTime)
+        if (targetPlayer == null)
         {
-            Shoot();
-            nextFireTime = Time.time + fireRate;
+            FindPlayer();
+
+            if (targetPlayer == null)
+                return;
+        }
+
+        if (projectilePrefab == null)
+            return;
+
+        float distance = Vector3.Distance(
+            transform.position,
+            targetPlayer.position
+        );
+
+        if (distance > attackRange)
+            return;
+
+        if (Time.time < nextFireTime)
+            return;
+
+        Shoot();
+
+        nextFireTime = Time.time +
+            Mathf.Max(0.01f, fireRate);
+    }
+
+    void FindPlayer()
+    {
+        GameObject player =
+            GameObject.FindGameObjectWithTag("Player");
+
+        if (player != null)
+            targetPlayer = player.transform;
+    }
+
+    void Shoot()
+    {
+        // 총알 생성 위치
+        Vector3 spawnPosition;
+
+        if (firePoint != null)
+        {
+            spawnPosition = firePoint.position;
+        }
+        else
+        {
+            spawnPosition =
+                transform.position +
+                transform.forward * 1.5f;
+        }
+
+        // 플레이어의 몸통 위치 계산
+        Vector3 targetPosition =
+            targetPlayer.position +
+            Vector3.up * targetHeightOffset;
+
+        // 발사 위치에서 플레이어까지의 방향
+        Vector3 shootDirection =
+            (targetPosition - spawnPosition).normalized;
+
+        if (shootDirection.sqrMagnitude < 0.001f)
+            return;
+
+        // 플레이어 방향으로 회전
+        Quaternion shootRotation =
+            Quaternion.LookRotation(
+                shootDirection,
+                Vector3.up
+            );
+
+        // 총알 생성
+        GameObject bulletObject = Instantiate(
+            projectilePrefab,
+            spawnPosition,
+            shootRotation
+        );
+
+        // 총알에 발사 방향 직접 전달
+        MonsterProjectile projectile =
+            bulletObject.GetComponent<MonsterProjectile>();
+
+        if (projectile == null)
+        {
+            Debug.LogError(
+                "몬스터 총알에 MonsterProjectile이 없습니다!"
+            );
+
+            Destroy(bulletObject);
+            return;
+        }
+
+        projectile.Setup(
+            shootDirection,
+            transform
+        );
+
+        PlayAttackAnimation();
+
+        if (showDebugLogs)
+        {
+            Debug.DrawLine(
+                spawnPosition,
+                targetPosition,
+                Color.red,
+                2f
+            );
+
+            Debug.Log(
+                name + " 플레이어 방향으로 발사!"
+            );
         }
     }
 
-    private void Shoot()
+    void PlayAttackAnimation()
     {
-        // 공격 애니메이션 실행
-        if (animator != null && !string.IsNullOrEmpty(attackTriggerName))
+        if (!useAttackAnimation || animator == null)
+            return;
+
+        foreach (
+            AnimatorControllerParameter parameter
+            in animator.parameters
+        )
         {
-            animator.SetTrigger(attackTriggerName);
-        }
-
-        // 투사체 생성
-        GameObject projectileObj = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
-
-        // 플레이어의 중앙(가슴/몸통)을 겨냥하도록 타겟 위치 조절
-        Vector3 targetPosition = targetPlayer.position + Vector3.up * 1f;
-        Vector3 shootDirection = (targetPosition - firePoint.position).normalized;
-
-        // 생성된 투사체에 날아가는 방향 전달
-        MonsterProjectile projectile = projectileObj.GetComponent<MonsterProjectile>();
-        if (projectile != null)
-        {
-            projectile.Setup(shootDirection);
+            if (parameter.name == attackTriggerName &&
+                parameter.type ==
+                AnimatorControllerParameterType.Trigger)
+            {
+                animator.SetTrigger(attackTriggerName);
+                break;
+            }
         }
     }
 
-    // 에디터 씬 뷰에서 공격 사거리 시각화
-    private void OnDrawGizmosSelected()
+    void OnDrawGizmosSelected()
     {
+        if (targetPlayer == null)
+            return;
+
+        Vector3 spawnPosition = firePoint != null
+            ? firePoint.position
+            : transform.position;
+
+        Vector3 targetPosition =
+            targetPlayer.position +
+            Vector3.up * targetHeightOffset;
+
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
+        Gizmos.DrawLine(
+            spawnPosition,
+            targetPosition
+        );
+
+        Gizmos.DrawWireSphere(
+            targetPosition,
+            0.2f
+        );
     }
 }

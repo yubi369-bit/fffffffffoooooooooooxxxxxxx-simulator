@@ -1,74 +1,259 @@
+
 using UnityEngine;
 
 public class FlyingMonsterAI : MonoBehaviour
 {
-    [Header("타겟 설정")]
-    public Transform targetPlayer;          // 추적할 플레이어
+    [Header("플레이어 설정")]
+    [Tooltip("비워두면 Player 태그로 자동 검색")]
+    public Transform targetPlayer;
+
+    [Header("추적 설정")]
+    public float moveSpeed = 7f;
+
+    [Tooltip("플레이어와 유지할 수평 거리")]
+    public float stoppingDistance = 2f;
+
+    [Tooltip("거리 판정 여유값")]
+    public float distanceTolerance = 0.1f;
 
     [Header("비행 설정")]
-    public float moveSpeed = 5f;             // 이동 속도
-    public float rotationSpeed = 5f;         // 회전 속도
-    public float flyHeightOffset = 3f;       // 플레이어 머리 위 유지할 고도(높이)
-    public float stoppingDistance = 2f;      // 플레이어와 유지할 최소 거리
+    public float flyHeightOffset = 3f;
+    public float hoverAmplitude = 0.5f;
+    public float hoverFrequency = 2f;
 
-    [Header("공중 부유 연출 (Swaying)")]
-    public float hoverAmplitude = 0.5f;      // 위아래로 둥둥 떠다니는 높이
-    public float hoverFrequency = 2f;        // 둥둥 떠다니는 속도
+    [Header("회전 설정")]
+    [Tooltip("0이면 즉시 플레이어를 바라봄")]
+    public float rotationSpeed = 0f;
+
+    [Tooltip("몬스터 외형 자식 오브젝트")]
+    public Transform visualModel;
+
+    [Tooltip("모델 정면 방향 보정")]
+    public float modelYawOffset = 0f;
+
+    [Header("디버그")]
+    public bool showDebugLogs = false;
 
     private Rigidbody rb;
-    private float startYOffset;
+    private Health health;
+
+    private float hoverOffset;
+
+    private Quaternion initialModelRotation;
+    private bool hasVisualModel;
+
+    private Vector3 lastHorizontalDirection;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        health = GetComponent<Health>();
 
-        // 플레이어 자동 탐색 (태그 기준)
-        if (targetPlayer == null)
-        {
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-            if (playerObj != null) targetPlayer = playerObj.transform;
-        }
+        FindPlayer();
 
-        // Rigidbody를 사용할 경우 중력 영향 해제
         if (rb != null)
         {
             rb.useGravity = false;
-            rb.isKinematic = true; // 직접 Position을 제어할 경우 true
+            rb.isKinematic = true;
         }
 
-        startYOffset = Random.Range(0f, 100f); // 몬스터마다 둥둥 거리는 박자 다르게 설정
+        hasVisualModel =
+            visualModel != null &&
+            visualModel != transform;
+
+        if (hasVisualModel)
+        {
+            initialModelRotation = visualModel.localRotation;
+        }
+
+        hoverOffset = Random.Range(0f, 100f);
+
+        lastHorizontalDirection = -transform.forward;
+        lastHorizontalDirection.y = 0f;
+
+        if (lastHorizontalDirection.sqrMagnitude < 0.001f)
+            lastHorizontalDirection = Vector3.back;
+
+        lastHorizontalDirection.Normalize();
     }
 
     void Update()
     {
-        if (targetPlayer == null) return;
+        // 사망한 몬스터는 추적 중단
+        if (health != null && health.isEnemyDead)
+            return;
 
-        FlyToTarget();
+        if (targetPlayer == null)
+        {
+            FindPlayer();
+
+            if (targetPlayer == null)
+                return;
+        }
+
+        FollowPlayer();
+        FacePlayer();
     }
 
-    private void FlyToTarget()
+    void FindPlayer()
     {
-        // 1. 공중 목표 위치 계산 (플레이어 위치 + 공중 높이 + 위아래 둥둥거림 효과)
-        float hoverY = Mathf.Sin((Time.time + startYOffset) * hoverFrequency) * hoverAmplitude;
-        Vector3 targetPosition = targetPlayer.position + Vector3.up * (flyHeightOffset + hoverY);
+        GameObject player =
+            GameObject.FindGameObjectWithTag("Player");
 
-        // 2. 거리가 멀 때만 플레이어 쪽으로 이동
-        float distanceToTarget = Vector3.Distance(transform.position, targetPosition);
-        if (distanceToTarget > stoppingDistance)
+        if (player != null)
         {
-            transform.position = Vector3.MoveTowards(
-                transform.position, 
-                targetPosition, 
-                moveSpeed * Time.deltaTime
+            targetPlayer = player.transform;
+        }
+    }
+
+    void FollowPlayer()
+    {
+        Vector3 playerPosition = targetPlayer.position;
+        Vector3 monsterPosition = transform.position;
+
+        // 수평 거리 계산
+        Vector3 horizontalDifference =
+            monsterPosition - playerPosition;
+
+        horizontalDifference.y = 0f;
+
+        float horizontalDistance =
+            horizontalDifference.magnitude;
+
+        if (horizontalDistance > 0.001f)
+        {
+            lastHorizontalDirection =
+                horizontalDifference.normalized;
+        }
+
+        // 몬스터가 플레이어와 유지할 위치
+        Vector3 desiredPosition =
+            playerPosition +
+            lastHorizontalDirection *
+            Mathf.Max(0f, stoppingDistance);
+
+        // 공중 부유 효과
+        float hoverY = Mathf.Sin(
+            (Time.time + hoverOffset) * hoverFrequency
+        ) * hoverAmplitude;
+
+        desiredPosition.y =
+            playerPosition.y +
+            flyHeightOffset +
+            hoverY;
+
+        // 매 프레임 목표 위치를 갱신
+        float distanceToDesired =
+            Vector3.Distance(
+                transform.position,
+                desiredPosition
+            );
+
+        if (distanceToDesired > distanceTolerance)
+        {
+            Vector3 newPosition =
+                Vector3.MoveTowards(
+                    transform.position,
+                    desiredPosition,
+                    moveSpeed * Time.deltaTime
+                );
+
+            if (rb != null && rb.isKinematic)
+            {
+                rb.MovePosition(newPosition);
+            }
+            else
+            {
+                transform.position = newPosition;
+            }
+        }
+
+        if (showDebugLogs)
+        {
+            Debug.DrawLine(
+                transform.position,
+                desiredPosition,
+                Color.green
+            );
+
+            Debug.DrawLine(
+                transform.position,
+                playerPosition,
+                Color.red
             );
         }
+    }
 
-        // 3. 플레이어 쪽을 바라보도록 회전 (Y축 기준 회전 또는 바라보기)
-        Vector3 direction = (targetPlayer.position - transform.position).normalized;
-        if (direction != Vector3.zero)
+    void FacePlayer()
+    {
+        Vector3 direction =
+            targetPlayer.position - transform.position;
+
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude < 0.0001f)
+            return;
+
+        Quaternion lookRotation =
+            Quaternion.LookRotation(
+                direction.normalized,
+                Vector3.up
+            );
+
+        Quaternion correctedRotation =
+            lookRotation;
+
+        if (hasVisualModel)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            visualModel.localRotation =
+                Quaternion.Euler(
+                    0f,
+                    modelYawOffset,
+                    0f
+                ) * initialModelRotation;
         }
+        else
+        {
+            correctedRotation *=
+                Quaternion.Euler(
+                    0f,
+                    modelYawOffset,
+                    0f
+                );
+        }
+
+        if (rotationSpeed <= 0f)
+        {
+            transform.rotation = correctedRotation;
+        }
+        else
+        {
+            transform.rotation =
+                Quaternion.RotateTowards(
+                    transform.rotation,
+                    correctedRotation,
+                    rotationSpeed * Time.deltaTime
+                );
+        }
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (targetPlayer == null)
+            return;
+
+        Gizmos.color = Color.cyan;
+
+        Gizmos.DrawWireSphere(
+            targetPlayer.position,
+            stoppingDistance
+        );
+
+        Gizmos.color = Color.yellow;
+
+        Gizmos.DrawLine(
+            transform.position,
+            targetPlayer.position
+        );
     }
 }

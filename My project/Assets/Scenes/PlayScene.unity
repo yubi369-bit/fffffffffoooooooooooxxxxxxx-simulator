@@ -274,6 +274,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   enemyPrefabs:
   - {fileID: 8578906274988494340, guid: 328c2ebc362b1634e8d1cb8933b11cbe, type: 3}
+  - {fileID: 6518125422095724341, guid: 01b7b0579350974419ff0f496d76ac40, type: 3}
   player: {fileID: 2017600876}
   spawnDistance: 15
   spawnHeightOffset: 0
@@ -577,6 +578,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 679474266}
   m_CullTransparentMesh: 1
+--- !u!1 &783045054
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 783045056}
+  - component: {fileID: 783045055}
+  m_Layer: 0
+  m_Name: CrosshairManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &783045055
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 783045054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d373524d5e0d13d4ab62f7ad3b6472a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CrosshairCursor
+  crosshairSprite: {fileID: 21300000, guid: cb4374fc878a3824fbaa0edbab9e5af5, type: 3}
+  crosshairSize: 100
+  targetCanvas: {fileID: 0}
+  lockCursorOnStart: 1
+--- !u!4 &783045056
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 783045054}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 179.73935, y: -0, z: 26.44057}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &848567733
 GameObject:
   m_ObjectHideFlags: 0
@@ -2112,7 +2161,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: fcb6fbdb9b484bf47a565ae3a0824640, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2250,3 +2299,4 @@ SceneRoots:
   - {fileID: 50068348}
   - {fileID: 1892009215}
   - {fileID: 1593123260}
+  - {fileID: 783045056}

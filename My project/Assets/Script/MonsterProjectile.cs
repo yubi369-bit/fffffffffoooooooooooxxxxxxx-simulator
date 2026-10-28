@@ -1,57 +1,162 @@
+
 using UnityEngine;
 
 public class MonsterProjectile : MonoBehaviour
 {
-    [Header("투사체 설정")]
-    public float speed = 15f;           // 날아가는 속도
-    public float damage = 10f;          // 플레이어에게 줄 데미지
-    public float lifeTime = 5f;         // 자동으로 사라질 시간
+    [Header("총알 설정")]
+    public float moveSpeed = 12f;
+    public int damage = 1;
+    public float lifeTime = 10f;
 
-    [Header("이펙트 (선택 사항)")]
-    public GameObject hitEffectPrefab;  // 충돌 시 터지는 이펙트 프리팹
+    [Header("충돌 설정")]
+    public float hitRadius = 0.15f;
+    public LayerMask hitLayers = ~0;
 
     private Vector3 moveDirection;
+    private Transform owner;
+
+    private bool initialized;
+    private bool hasHit;
 
     public void Setup(Vector3 direction)
     {
-        moveDirection = direction;
-        // 총알이 날아가는 방향을 바라보도록 회전
-        if (moveDirection != Vector3.zero)
+        Setup(direction, null);
+    }
+
+    public void Setup(
+        Vector3 direction,
+        Transform shooter
+    )
+    {
+        moveDirection = direction.normalized;
+        owner = shooter;
+
+        initialized = true;
+        hasHit = false;
+
+        if (moveDirection.sqrMagnitude < 0.001f)
         {
-            transform.rotation = Quaternion.LookRotation(moveDirection);
+            moveDirection = Vector3.forward;
         }
 
-        // 일정 시간이 지나면 자동 파괴
-        Destroy(gameObject, lifeTime);
+        transform.rotation =
+            Quaternion.LookRotation(moveDirection);
+
+        Destroy(
+            gameObject,
+            Mathf.Max(0.01f, lifeTime)
+        );
     }
 
     void Update()
     {
-        // 설정된 방향으로 직선 이동
-        transform.position += moveDirection * speed * Time.deltaTime;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        // 몬스터 자신에게 부딪히는 것은 무시
-        if (other.CompareTag("Enemy") || other.CompareTag("Untagged")) 
+        if (!initialized || hasHit)
             return;
 
-        // 플레이어에게 데미지 전달 예시
-        if (other.CompareTag("Player"))
+        float moveDistance =
+            moveSpeed * Time.deltaTime;
+
+        RaycastHit[] hits = Physics.SphereCastAll(
+            transform.position,
+            Mathf.Max(0.001f, hitRadius),
+            moveDirection,
+            moveDistance,
+            hitLayers,
+            QueryTriggerInteraction.Ignore
+        );
+
+        float closestDistance = float.MaxValue;
+        Collider closestCollider = null;
+
+        foreach (RaycastHit hit in hits)
         {
-            // 플레이어 데미지 처리 스크립트가 있다면 호출
-            // other.GetComponent<PlayerStats>()?.TakeDamage(damage);
-            Debug.Log($"플레이어가 몬스터 투사체에 맞아 {damage} 데미지를 입었습니다.");
+            if (IsOwner(hit.collider.transform))
+                continue;
+
+            if (hit.collider.transform.IsChildOf(transform))
+                continue;
+
+            Health targetHealth =
+                hit.collider.GetComponentInParent<Health>();
+
+            // 다른 몬스터는 무시
+            if (targetHealth != null &&
+                !targetHealth.CompareTag("Player"))
+            {
+                continue;
+            }
+
+            if (hit.distance < closestDistance)
+            {
+                closestDistance = hit.distance;
+                closestCollider = hit.collider;
+            }
         }
 
-        // 히트 이펙트 생성
-        if (hitEffectPrefab != null)
+        if (closestCollider != null)
         {
-            Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
+            transform.position +=
+                moveDirection * closestDistance;
+
+            HitTarget(closestCollider);
+            return;
         }
 
-        // 충돌 후 투사체 파괴
+        transform.position +=
+            moveDirection * moveDistance;
+    }
+
+    bool IsOwner(Transform target)
+    {
+        if (owner == null)
+            return false;
+
+        return target == owner ||
+               target.IsChildOf(owner);
+    }
+
+    void HitTarget(Collider other)
+    {
+        if (hasHit)
+            return;
+
+        if (IsOwner(other.transform))
+            return;
+
+        Health health =
+            other.GetComponentInParent<Health>();
+
+        if (health != null &&
+            !health.CompareTag("Player"))
+        {
+            return;
+        }
+
+        hasHit = true;
+
+        if (health != null &&
+            health.CompareTag("Player"))
+        {
+            health.TakeDamage(damage);
+        }
+
         Destroy(gameObject);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (!initialized || hasHit)
+            return;
+
+        if (IsOwner(other.transform))
+            return;
+
+        if (((1 << other.gameObject.layer) &
+             hitLayers.value) == 0)
+        {
+            return;
+        }
+
+        HitTarget(other);
     }
 }
