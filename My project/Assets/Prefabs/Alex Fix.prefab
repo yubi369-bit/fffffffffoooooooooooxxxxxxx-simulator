@@ -767,7 +767,6 @@ GameObject:
   - component: {fileID: 5960756047458251481}
   - component: {fileID: 1235094886823058805}
   - component: {fileID: 7832198342389132752}
-  - component: {fileID: 5057187762540271164}
   - component: {fileID: 3786450772177496262}
   - component: {fileID: 4670820703443858238}
   - component: {fileID: 1436996146735469633}
@@ -839,21 +838,6 @@ MonoBehaviour:
   itemText: {fileID: 0}
   deathRotateSpeed: 500
   isEnemyDead: 0
---- !u!114 &5057187762540271164
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8496794334198716424}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8fa6499ac4f967743b9d33c5aff06556, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LootableEnemy
-  rewardType: 0
-  rewardValue: 30
-  interactionDistance: 3
 --- !u!54 &3786450772177496262
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -205,16 +205,10 @@ MonoBehaviour:
   moveSpeed: 2
   detectRange: 15
   attackRange: 1.5
+  fixedY: 0
   visualModel: {fileID: 103599441860339050}
   modelForward: 2
   rotationSpeed: 720
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  groundOffset: 0
-  snapToGroundOnStart: 1
-  groundCheckHeight: 30
-  groundCheckDistance: 100
   damage: 1
   attackCooldown: 1
 --- !u!65 &5357998583391665676
@@ -271,7 +265,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LootableEnemy
   rewardType: 0
-  rewardValue: 30
+  rewardValue: 1
   interactionDistance: 3
 --- !u!54 &3569365852304225550
 Rigidbody:
