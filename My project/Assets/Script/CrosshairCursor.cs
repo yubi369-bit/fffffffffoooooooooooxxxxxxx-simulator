@@ -34,6 +34,10 @@ public class CrosshairCursor : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.instance.isGameOver)
+        {
+            return;
+        }
         if (Keyboard.current != null &&
             Keyboard.current.escapeKey.wasPressedThisFrame)
         {
