@@ -98,14 +98,9 @@ public class FoxController : MonoBehaviour
 
     void Update()
     {
-        // 기존 게임오버 처리 유지
-        if (GameManager.instance != null &&
-            GameManager.instance.isGameOver)
-        {
-            return;
-        }
+        if (GameManager.instance.isGameOver) return;
 
-        HandleCursor();
+            HandleCursor();
         HandleMouseLook();
         HandleMovement();
         HandleAnimation();
@@ -113,11 +108,7 @@ public class FoxController : MonoBehaviour
 
     void LateUpdate()
     {
-        if (GameManager.instance != null &&
-            GameManager.instance.isGameOver)
-        {
-            return;
-        }
+        if (GameManager.instance.isGameOver) return;
 
         UpdateCamera();
     }
