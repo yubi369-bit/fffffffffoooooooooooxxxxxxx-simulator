@@ -9,6 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 81239057006115960}
+  - component: {fileID: -4368207508706492544}
+  - component: {fileID: -5541624831050381786}
+  - component: {fileID: -6225331934880251967}
+  - component: {fileID: 7732543085066368344}
+  - component: {fileID: -8828026919609627562}
   m_Layer: 0
   m_Name: Alex
   m_TagString: Enemy
@@ -36,6 +41,108 @@ Transform:
   - {fileID: 4280657313315901009}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-4368207508706492544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6518125422095724341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcc6cb26b8e863d44a275ff728b7b628, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FlyingMonsterAI
+  targetPlayer: {fileID: 6296677909406894145, guid: 553a987d30f548b449e15410b1baa44d, type: 3}
+  moveSpeed: 5
+  rotationSpeed: 5
+  flyHeightOffset: 3
+  stoppingDistance: 2
+  hoverAmplitude: 0.5
+  hoverFrequency: 2
+--- !u!114 &-5541624831050381786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6518125422095724341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49d9964f3b0cbc5458cfa26bdfa7ae39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+  maxHp: 3
+  currentHp: 0
+  hpSlider: {fileID: 0}
+  takeDamageSound: {fileID: 8300000, guid: b8492b5baa70d2e44a424a02bd9f1f23, type: 3}
+  enemyDeadSound: {fileID: 8300000, guid: a44384d25cdaaa044829ad426c107c57, type: 3}
+  itemText: {fileID: 0}
+  deathRotateSpeed: 500
+  isEnemyDead: 0
+--- !u!114 &-6225331934880251967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6518125422095724341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fa6499ac4f967743b9d33c5aff06556, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LootableEnemy
+  rewardType: 0
+  rewardValue: 30
+  interactionDistance: 3
+--- !u!54 &7732543085066368344
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6518125422095724341}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!65 &-8828026919609627562
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6518125422095724341}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6976725859369605855
 GameObject:
   m_ObjectHideFlags: 0
