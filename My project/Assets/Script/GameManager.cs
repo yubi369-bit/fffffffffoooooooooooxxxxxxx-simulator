@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,7 +21,11 @@ public class GameManager : MonoBehaviour
         isGameOver = true;
         Time.timeScale = 0f;
 
+        GameOverPanelManager.Instance.gameOverVolume.weight = 1f;
+
         AudioManager.Instance.StopBGM();
         AudioManager.Instance.PlaySFX(gtaDeadSFX);
+
+        GameOverPanelManager.Instance.GameOverWait();
     }
 }
