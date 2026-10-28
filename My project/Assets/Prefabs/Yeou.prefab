@@ -286,6 +286,7 @@ GameObject:
   - component: {fileID: 7573233739492497017}
   - component: {fileID: 8267057726360505074}
   - component: {fileID: 9094031799191934556}
+  - component: {fileID: 7484408715682161971}
   m_Layer: 0
   m_Name: Yeou
   m_TagString: Player
@@ -424,6 +425,8 @@ MonoBehaviour:
   maxHp: 3
   currentHp: 0
   hpSlider: {fileID: 0}
+  deathRotateSpeed: 1000
+  isEnemyDead: 0
 --- !u!114 &9094031799191934556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -447,6 +450,27 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   automaticFire: 1
+--- !u!65 &7484408715682161971
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6730664752915174813}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 4.068642, y: 0.8371611, z: 3}
+  m_Center: {x: 0.020008683, y: 0.48044488, z: 0}
 --- !u!1 &7791306904149527931
 GameObject:
   m_ObjectHideFlags: 0

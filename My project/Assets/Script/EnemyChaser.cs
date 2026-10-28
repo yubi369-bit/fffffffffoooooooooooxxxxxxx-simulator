@@ -30,12 +30,20 @@ public class EnemyChaser : MonoBehaviour
         LeftX
     }
 
+    private Health health;
+    private BoxCollider boxCollider;
+
     private Transform player;
     private float lastAttackTime = -999f;
 
     private Quaternion initialVisualRotation;
     private bool hasVisualModel;
 
+    private void Awake()
+    {
+        health = GetComponent<Health>();
+        boxCollider = GetComponent<BoxCollider>();
+    }
     void Start()
     {
         GameObject p = GameObject.FindWithTag("Player");
@@ -56,6 +64,18 @@ public class EnemyChaser : MonoBehaviour
 
     void Update()
     {
+        bool isEnemyDead = health.isEnemyDead;
+
+        if (isEnemyDead)
+        {
+            if (boxCollider != null)
+            {
+                boxCollider.isTrigger = true;
+            }
+
+            return;
+        }
+
         if (player == null) return;
 
         Vector3 toPlayer = player.position - transform.position;

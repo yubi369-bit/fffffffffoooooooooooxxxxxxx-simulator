@@ -1,4 +1,5 @@
 
+using System.Collections;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -60,6 +61,16 @@ public class Bullet : MonoBehaviour
 
         // 총알 앞으로 이동
         transform.position += direction * distance;
+
+        StartCoroutine(BulletDestroy(5f));
+    }
+
+    //5초 후에 투사체 파괴되도록 하는 코루틴
+    IEnumerator BulletDestroy(float delay)
+    {
+        yield return new WaitForSecondsRealtime(delay);
+
+        Destroy(gameObject);
     }
 
     void HandleHit(Collider target)

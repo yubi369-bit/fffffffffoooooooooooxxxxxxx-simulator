@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        GameOverPanelManager.Instance.deathCamera.Priority = 30;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 

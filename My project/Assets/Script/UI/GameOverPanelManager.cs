@@ -2,9 +2,13 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
+using Unity.Cinemachine;
 
 public class GameOverPanelManager : MonoBehaviour
 {
+    public CinemachineCamera deathCamera;
+
+
     public GameObject gameOverPanel;
 
     public Volume gameOverVolume;
@@ -26,7 +30,7 @@ public class GameOverPanelManager : MonoBehaviour
 
     public void ClickGameOverPanel()
     {
-        
+        deathCamera.Priority = 0;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
@@ -41,7 +45,7 @@ public class GameOverPanelManager : MonoBehaviour
 
     public void GameOverWait()
     {
-        StartCoroutine(ShowPanelAnimation(3f));
+        StartCoroutine(ShowPanelAnimation(2.8f));
     }
 
     IEnumerator ShowPanelAnimation(float delay)
