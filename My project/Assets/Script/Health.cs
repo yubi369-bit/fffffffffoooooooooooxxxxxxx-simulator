@@ -7,6 +7,10 @@ public class Health : MonoBehaviour
     public int currentHp;
     public Slider hpSlider;
 
+    public AudioClip takeDamageSound;
+
+    public AudioClip enemyDeadSound;
+
     [Header("≈ÿΩ∫∆Æ UI")]
     public GameObject itemText;
 
@@ -60,6 +64,11 @@ public class Health : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        if (takeDamageSound != null)
+        {
+            AudioManager.Instance.PlaySFX(takeDamageSound);
+        }
+
         if (currentHp <= 0) return;
         currentHp -= damage;
         Debug.Log(name + " hp: " + currentHp);
@@ -83,6 +92,11 @@ public class Health : MonoBehaviour
         }
         else if (CompareTag("Enemy"))
         {
+            if (enemyDeadSound != null)
+            {
+                AudioManager.Instance.PlaySFX(enemyDeadSound);
+            }
+
             isEnemyDead = true;
         }
         else

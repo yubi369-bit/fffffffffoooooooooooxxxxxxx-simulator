@@ -243,9 +243,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49d9964f3b0cbc5458cfa26bdfa7ae39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
-  maxHp: 1
+  maxHp: 3
   currentHp: 0
   hpSlider: {fileID: 0}
+  takeDamageSound: {fileID: 8300000, guid: b8492b5baa70d2e44a424a02bd9f1f23, type: 3}
+  enemyDeadSound: {fileID: 8300000, guid: a44384d25cdaaa044829ad426c107c57, type: 3}
+  itemText: {fileID: 0}
   deathRotateSpeed: 500
   isEnemyDead: 0
 --- !u!114 &8095968026314940740
@@ -263,7 +266,6 @@ MonoBehaviour:
   rewardType: 0
   rewardValue: 30
   interactionDistance: 3
-  interactPrompt: Press [E] to Search Body
 --- !u!54 &3569365852304225550
 Rigidbody:
   m_ObjectHideFlags: 0

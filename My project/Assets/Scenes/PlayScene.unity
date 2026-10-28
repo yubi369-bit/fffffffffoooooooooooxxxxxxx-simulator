@@ -1998,6 +1998,10 @@ PrefabInstance:
       propertyPath: itemText
       value: 
       objectReference: {fileID: 1262708669}
+    - target: {fileID: 8267057726360505074, guid: 553a987d30f548b449e15410b1baa44d, type: 3}
+      propertyPath: takeDamageSound
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 9094031799191934556, guid: 553a987d30f548b449e15410b1baa44d, type: 3}
       propertyPath: playerCamera
       value: 
