@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -6225331934880251967}
   - component: {fileID: 7732543085066368344}
   - component: {fileID: -8828026919609627562}
+  - component: {fileID: 31043555449945985}
   m_Layer: 0
   m_Name: Alex
   m_TagString: Enemy
@@ -143,6 +144,25 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &31043555449945985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6518125422095724341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bb657d06a63b334a803870d55f29e7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FlyingMonsterShooter
+  targetPlayer: {fileID: 6296677909406894145, guid: 553a987d30f548b449e15410b1baa44d, type: 3}
+  projectilePrefab: {fileID: 0}
+  firePoint: {fileID: 0}
+  fireRate: 2
+  attackRange: 15
+  animator: {fileID: 0}
+  attackTriggerName: Attack
 --- !u!1 &6976725859369605855
 GameObject:
   m_ObjectHideFlags: 0
