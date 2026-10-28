@@ -274,7 +274,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   enemyPrefabs:
   - {fileID: 8578906274988494340, guid: 328c2ebc362b1634e8d1cb8933b11cbe, type: 3}
-  - {fileID: 6518125422095724341, guid: 01b7b0579350974419ff0f496d76ac40, type: 3}
+  - {fileID: 8496794334198716424, guid: d1e83c4be56c69d4aa6a9c7aa481ecde, type: 3}
   player: {fileID: 2017600876}
   spawnDistance: 15
   spawnHeightOffset: 0

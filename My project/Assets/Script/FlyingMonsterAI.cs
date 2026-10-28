@@ -4,82 +4,58 @@ using UnityEngine;
 public class FlyingMonsterAI : MonoBehaviour
 {
     [Header("플레이어 설정")]
-    [Tooltip("비워두면 Player 태그로 자동 검색")]
     public Transform targetPlayer;
 
-    [Header("추적 설정")]
+    [Header("이동 설정")]
     public float moveSpeed = 7f;
-
-    [Tooltip("플레이어와 유지할 수평 거리")]
     public float stoppingDistance = 2f;
-
-    [Tooltip("거리 판정 여유값")]
-    public float distanceTolerance = 0.1f;
 
     [Header("비행 설정")]
     public float flyHeightOffset = 3f;
-    public float hoverAmplitude = 0.5f;
+    public float hoverAmplitude = 0.3f;
     public float hoverFrequency = 2f;
 
     [Header("회전 설정")]
-    [Tooltip("0이면 즉시 플레이어를 바라봄")]
     public float rotationSpeed = 0f;
-
-    [Tooltip("몬스터 외형 자식 오브젝트")]
     public Transform visualModel;
-
-    [Tooltip("모델 정면 방향 보정")]
     public float modelYawOffset = 0f;
 
     [Header("디버그")]
     public bool showDebugLogs = false;
 
-    private Rigidbody rb;
     private Health health;
+    private Rigidbody rb;
 
     private float hoverOffset;
+    private Quaternion initialVisualRotation;
 
-    private Quaternion initialModelRotation;
-    private bool hasVisualModel;
-
-    private Vector3 lastHorizontalDirection;
+    void Awake()
+    {
+        health = GetComponent<Health>();
+        rb = GetComponent<Rigidbody>();
+    }
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
-        health = GetComponent<Health>();
-
         FindPlayer();
 
+        if (visualModel != null && visualModel != transform)
+        {
+            initialVisualRotation = visualModel.localRotation;
+        }
+
+        hoverOffset = Random.Range(0f, 100f);
+
+        // 물리 충돌로 이동이 막히지 않도록 설정
         if (rb != null)
         {
             rb.useGravity = false;
             rb.isKinematic = true;
         }
-
-        hasVisualModel =
-            visualModel != null &&
-            visualModel != transform;
-
-        if (hasVisualModel)
-        {
-            initialModelRotation = visualModel.localRotation;
-        }
-
-        hoverOffset = Random.Range(0f, 100f);
-
-        lastHorizontalDirection = -transform.forward;
-        lastHorizontalDirection.y = 0f;
-
-        if (lastHorizontalDirection.sqrMagnitude < 0.001f)
-            lastHorizontalDirection = Vector3.back;
-
-        lastHorizontalDirection.Normalize();
     }
 
     void Update()
     {
-        // 사망한 몬스터는 추적 중단
         if (health != null && health.isEnemyDead)
             return;
 
@@ -91,8 +67,8 @@ public class FlyingMonsterAI : MonoBehaviour
                 return;
         }
 
-        FollowPlayer();
-        FacePlayer();
+        MoveToPlayer();
+        LookAtPlayer();
     }
 
     void FindPlayer()
@@ -106,76 +82,62 @@ public class FlyingMonsterAI : MonoBehaviour
         }
     }
 
-    void FollowPlayer()
+    void MoveToPlayer()
     {
         Vector3 playerPosition = targetPlayer.position;
-        Vector3 monsterPosition = transform.position;
+        Vector3 currentPosition = transform.position;
 
-        // 수평 거리 계산
-        Vector3 horizontalDifference =
-            monsterPosition - playerPosition;
+        Vector3 horizontalDirection =
+            playerPosition - currentPosition;
 
-        horizontalDifference.y = 0f;
+        horizontalDirection.y = 0f;
 
         float horizontalDistance =
-            horizontalDifference.magnitude;
+            horizontalDirection.magnitude;
 
-        if (horizontalDistance > 0.001f)
-        {
-            lastHorizontalDirection =
-                horizontalDifference.normalized;
-        }
-
-        // 몬스터가 플레이어와 유지할 위치
-        Vector3 desiredPosition =
-            playerPosition +
-            lastHorizontalDirection *
-            Mathf.Max(0f, stoppingDistance);
-
-        // 공중 부유 효과
+        // 위아래 부유 효과
         float hoverY = Mathf.Sin(
             (Time.time + hoverOffset) * hoverFrequency
         ) * hoverAmplitude;
 
-        desiredPosition.y =
-            playerPosition.y +
-            flyHeightOffset +
-            hoverY;
+        float targetHeight =
+            playerPosition.y + flyHeightOffset + hoverY;
 
-        // 매 프레임 목표 위치를 갱신
-        float distanceToDesired =
-            Vector3.Distance(
-                transform.position,
-                desiredPosition
-            );
+        Vector3 movement = Vector3.zero;
 
-        if (distanceToDesired > distanceTolerance)
+        // 플레이어와 멀어지면 추적
+        if (horizontalDistance > stoppingDistance)
         {
-            Vector3 newPosition =
-                Vector3.MoveTowards(
-                    transform.position,
-                    desiredPosition,
-                    moveSpeed * Time.deltaTime
-                );
+            movement = horizontalDirection.normalized *
+                       moveSpeed * Time.deltaTime;
 
-            if (rb != null && rb.isKinematic)
-            {
-                rb.MovePosition(newPosition);
-            }
-            else
-            {
-                transform.position = newPosition;
-            }
+            // 정지 거리보다 더 가까이 접근하지 않도록 제한
+            float allowedDistance =
+                horizontalDistance - stoppingDistance;
+
+            movement = Vector3.ClampMagnitude(
+                movement,
+                allowedDistance
+            );
         }
+
+        // 높이는 항상 플레이어 기준으로 조절
+        float newY = Mathf.MoveTowards(
+            currentPosition.y,
+            targetHeight,
+            moveSpeed * Time.deltaTime
+        );
+
+        Vector3 nextPosition =
+            currentPosition + movement;
+
+        nextPosition.y = newY;
+
+        // 직접 위치 적용
+        transform.position = nextPosition;
 
         if (showDebugLogs)
         {
-            Debug.DrawLine(
-                transform.position,
-                desiredPosition,
-                Color.green
-            );
-
             Debug.DrawLine(
                 transform.position,
                 playerPosition,
@@ -184,7 +146,7 @@ public class FlyingMonsterAI : MonoBehaviour
         }
     }
 
-    void FacePlayer()
+    void LookAtPlayer()
     {
         Vector3 direction =
             targetPlayer.position - transform.position;
@@ -195,65 +157,38 @@ public class FlyingMonsterAI : MonoBehaviour
             return;
 
         Quaternion lookRotation =
-            Quaternion.LookRotation(
-                direction.normalized,
-                Vector3.up
+            Quaternion.LookRotation(direction);
+
+        if (rotationSpeed <= 0f)
+        {
+            transform.rotation = lookRotation;
+        }
+        else
+        {
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                lookRotation,
+                rotationSpeed * Time.deltaTime
             );
+        }
 
-        Quaternion correctedRotation =
-            lookRotation;
-
-        if (hasVisualModel)
+        if (visualModel != null && visualModel != transform)
         {
             visualModel.localRotation =
                 Quaternion.Euler(
                     0f,
                     modelYawOffset,
                     0f
-                ) * initialModelRotation;
+                ) * initialVisualRotation;
         }
         else
         {
-            correctedRotation *=
+            transform.rotation *=
                 Quaternion.Euler(
                     0f,
                     modelYawOffset,
                     0f
                 );
         }
-
-        if (rotationSpeed <= 0f)
-        {
-            transform.rotation = correctedRotation;
-        }
-        else
-        {
-            transform.rotation =
-                Quaternion.RotateTowards(
-                    transform.rotation,
-                    correctedRotation,
-                    rotationSpeed * Time.deltaTime
-                );
-        }
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        if (targetPlayer == null)
-            return;
-
-        Gizmos.color = Color.cyan;
-
-        Gizmos.DrawWireSphere(
-            targetPlayer.position,
-            stoppingDistance
-        );
-
-        Gizmos.color = Color.yellow;
-
-        Gizmos.DrawLine(
-            transform.position,
-            targetPlayer.position
-        );
     }
 }
