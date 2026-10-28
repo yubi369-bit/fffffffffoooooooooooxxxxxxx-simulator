@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
         Cursor.visible = true;
 
         isGameOver = true;
-        Time.timeScale = 0f;
+        Time.timeScale = 0.15f;
 
         GameOverPanelManager.Instance.gameOverVolume.weight = 1f;
 

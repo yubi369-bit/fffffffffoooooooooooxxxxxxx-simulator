@@ -52,5 +52,7 @@ public class GameOverPanelManager : MonoBehaviour
         {
             gameOverPanel.SetActive(true);
         }
+
+        Time.timeScale = 0f;
     }
 }
