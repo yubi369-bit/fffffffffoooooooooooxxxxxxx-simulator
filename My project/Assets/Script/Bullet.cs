@@ -1,11 +1,13 @@
 
-using System.Collections;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
     [Header("총알 설정")]
-    public float lifeTime = 5f;
+    [Tooltip("총알이 자동으로 사라지는 시간 (초)")]
+    public float lifeTime = 10f;
+
+    [Tooltip("총알 충돌 판정 반지름")]
     public float hitRadius = 0.1f;
 
     [Header("충돌 설정")]
@@ -15,9 +17,10 @@ public class Bullet : MonoBehaviour
     private float speed;
     private int damage;
 
-    private bool initialized;
-    private bool hasHit;
+    private bool initialized = false;
+    private bool hasHit = false;
 
+    // 총알 발사 시 초기 설정
     public void Initialize(
         Vector3 shootDirection,
         float bulletSpeed,
@@ -30,9 +33,12 @@ public class Bullet : MonoBehaviour
 
         initialized = true;
 
-        transform.rotation = Quaternion.LookRotation(direction);
+        // 발사 방향으로 총알 회전
+        transform.rotation =
+            Quaternion.LookRotation(direction);
 
-        Destroy(gameObject, lifeTime);
+        // 발사 후 10초가 지나면 자동 삭제
+        Destroy(gameObject, Mathf.Max(0.01f, lifeTime));
     }
 
     void Update()
@@ -40,9 +46,10 @@ public class Bullet : MonoBehaviour
         if (!initialized || hasHit)
             return;
 
+        // 총알 이동 거리 계산
         float distance = speed * Time.deltaTime;
 
-        // 이동 경로의 충돌 확인
+        // 이동 경로 충돌 감지
         if (Physics.SphereCast(
             transform.position,
             hitRadius,
@@ -59,18 +66,8 @@ public class Bullet : MonoBehaviour
             return;
         }
 
-        // 총알 앞으로 이동
+        // 총알 이동
         transform.position += direction * distance;
-
-        StartCoroutine(BulletDestroy(5f));
-    }
-
-    //5초 후에 투사체 파괴되도록 하는 코루틴
-    IEnumerator BulletDestroy(float delay)
-    {
-        yield return new WaitForSecondsRealtime(delay);
-
-        Destroy(gameObject);
     }
 
     void HandleHit(Collider target)
@@ -80,23 +77,25 @@ public class Bullet : MonoBehaviour
 
         hasHit = true;
 
-        // 충돌한 오브젝트 또는 부모에서 Health 검색
-        Health health = target.GetComponentInParent<Health>();
+        // 충돌한 적의 Health 검색
+        Health health =
+            target.GetComponentInParent<Health>();
 
         if (health != null)
         {
-            // 플레이어는 공격하지 않음
+            // 플레이어 자신에게는 데미지를 주지 않음
             if (!health.CompareTag("Player"))
             {
                 health.TakeDamage(damage);
 
                 Debug.Log(
-                    "총알 명중: " + health.gameObject.name
+                    "총알 명중: " +
+                    health.gameObject.name
                 );
             }
         }
 
-        // 충돌하면 총알 제거
+        // 충돌하면 즉시 총알 삭제
         Destroy(gameObject);
     }
 
@@ -105,8 +104,12 @@ public class Bullet : MonoBehaviour
         if (!initialized || hasHit)
             return;
 
-        if (((1 << other.gameObject.layer) & hitLayers.value) == 0)
+        // 설정된 충돌 레이어인지 확인
+        if (((1 << other.gameObject.layer) &
+             hitLayers.value) == 0)
+        {
             return;
+        }
 
         HandleHit(other);
     }

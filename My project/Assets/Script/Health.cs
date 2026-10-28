@@ -1,53 +1,101 @@
 
+using System;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
 
 public class Health : MonoBehaviour
 {
-    [Header("체력 설정")]
-    public int maxHp = 3;
+    public int maxHp = 10;
     public int currentHp;
     public Slider hpSlider;
 
-    [Header("적 사망 설정")]
-    [Tooltip("적이 사망했는지 확인")]
+    public AudioClip takeDamageSound;
+    public AudioClip enemyDeadSound;
+
+    [Header("텍스트 UI")]
+    public GameObject itemText;
+
+    [SerializeField]
+    private float deathRotateSpeed = 1000f;
+
     public bool isEnemyDead = false;
 
-    [Tooltip("일반 적 사망 후 오브젝트 삭제 여부")]
-    public bool destroyOnDeath = true;
+    private bool isEnemyTrigger;
+    private LootableEnemy currentLootableEnemy;
 
-    [Header("디버그")]
-    [SerializeField]
-    private bool isDead = false;
-
-    // 웨이브 처치 카운트용 사망 이벤트
+    // 웨이브 시스템 추가
+    // 적이 사망했을 때 WaveEnemy.cs에 알림
     public event Action<Health> OnDied;
+
+    private bool deathEventSent = false;
 
     void Start()
     {
-        maxHp = Mathf.Max(1, maxHp);
+        if (itemText != null)
+        {
+            itemText.SetActive(false);
+        }
+
+        isEnemyTrigger = false;
         currentHp = maxHp;
 
-        isDead = false;
-        isEnemyDead = false;
+        deathEventSent = false;
 
         UpdateBar();
     }
 
-    // 데미지 받기
+    private void Update()
+    {
+        if (GameManager.instance.isGameOver)
+        {
+            if (itemText != null)
+            {
+                itemText.SetActive(false);
+            }
+        }
+
+        if (isEnemyDead)
+        {
+            transform.Rotate(
+                0f,
+                deathRotateSpeed * Time.deltaTime,
+                0f
+            );
+        }
+
+        if (isEnemyTrigger &&
+            currentLootableEnemy != null)
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                currentLootableEnemy.Interact(gameObject);
+
+                currentLootableEnemy = null;
+
+                if (itemText != null)
+                {
+                    itemText.SetActive(false);
+                }
+            }
+        }
+    }
+
     public void TakeDamage(int damage)
     {
-        if (isDead || damage <= 0)
+        if (takeDamageSound != null)
+        {
+            AudioManager.Instance.PlaySFX(
+                takeDamageSound
+            );
+        }
+
+        if (currentHp <= 0)
             return;
 
-        currentHp = Mathf.Max(
-            0,
-            currentHp - damage
-        );
+        currentHp -= damage;
 
         Debug.Log(
-            gameObject.name + " HP: " + currentHp
+            name + " hp: " + currentHp
         );
 
         UpdateBar();
@@ -58,83 +106,98 @@ public class Health : MonoBehaviour
         }
     }
 
-    // 체력 회복
-    public void Heal(int amount)
-    {
-        if (isDead || amount <= 0)
-            return;
-
-        currentHp = Mathf.Min(
-            maxHp,
-            currentHp + amount
-        );
-
-        Debug.Log(
-            gameObject.name +
-            " 체력 회복! 현재 HP: " + currentHp
-        );
-
-        UpdateBar();
-    }
-
-    // HP 슬라이더 업데이트
     void UpdateBar()
     {
         if (hpSlider != null)
         {
             hpSlider.value =
-                (float)currentHp / Mathf.Max(1, maxHp);
+                (float)currentHp / maxHp;
         }
     }
 
-    // 사망 처리
     void Die()
     {
-        if (isDead)
-            return;
-
-        isDead = true;
-        currentHp = 0;
-
-        UpdateBar();
-
         if (CompareTag("Player"))
         {
-            Debug.Log("게임 오버!");
+            Debug.Log("게임 오버");
 
-            OnDied?.Invoke(this);
+            // 기존 게임오버 시스템 유지
+            GameManager.instance.GameOver();
+        }
+        else if (CompareTag("Enemy"))
+        {
+            if (enemyDeadSound != null)
+            {
+                AudioManager.Instance.PlaySFX(
+                    enemyDeadSound
+                );
+            }
 
-            Time.timeScale = 0f;
+            // 기존 적 사망 상태 유지
+            isEnemyDead = true;
+
+            // 웨이브 처치 카운트 추가
+            // 한 번만 실행되도록 중복 방지
+            if (!deathEventSent)
+            {
+                deathEventSent = true;
+
+                OnDied?.Invoke(this);
+            }
         }
         else
         {
-            // 적 사망 상태 적용
-            isEnemyDead = true;
+            Destroy(gameObject);
+        }
+    }
 
-            // WaveEnemy가 이 이벤트를 받아
-            // 웨이브 처치 수를 증가시킴
-            OnDied?.Invoke(this);
+    private void OnTriggerEnter(Collider other)
+    {
+        if (gameObject.CompareTag("Enemy"))
+            return;
 
-            // 보상 상호작용이 있는 적은
-            // 사망 후에도 오브젝트를 유지
-            LootableEnemy loot =
-                GetComponent<LootableEnemy>();
+        if (other.CompareTag("Enemy"))
+        {
+            LootableEnemy target =
+                other.GetComponent<LootableEnemy>();
 
-            if (loot != null)
+            if (itemText != null)
             {
-                Debug.Log(
-                    gameObject.name +
-                    " 사망! 보상 획득 가능"
-                );
-
-                return;
+                itemText.SetActive(true);
             }
 
-            // 일반 적은 기존 방식대로 삭제
-            if (destroyOnDeath)
+            if (target != null)
             {
-                Destroy(gameObject);
+                currentLootableEnemy = target;
+                isEnemyTrigger = true;
             }
         }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (gameObject.CompareTag("Enemy"))
+            return;
+
+        if (other.CompareTag("Enemy"))
+        {
+            if (itemText != null)
+            {
+                itemText.SetActive(false);
+            }
+
+            currentLootableEnemy = null;
+            isEnemyTrigger = false;
+        }
+    }
+
+    public void Heal(int amount)
+    {
+        currentHp = Mathf.Min(
+            currentHp + amount,
+            maxHp
+        );
+
+        UpdateBar();
     }
 }
