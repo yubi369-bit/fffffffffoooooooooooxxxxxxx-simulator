@@ -808,15 +808,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FlyingMonsterAI
   targetPlayer: {fileID: 6296677909406894145, guid: 553a987d30f548b449e15410b1baa44d, type: 3}
+  detectRange: 15
+  rememberPlayer: 1
+  hasDetectedPlayer: 0
   moveSpeed: 5
   stoppingDistance: 2
-  flyHeightOffset: 3
+  fixedFlyHeight: 3
   hoverAmplitude: 0.5
   hoverFrequency: 2
-  rotationSpeed: 5
   visualModel: {fileID: 3753584762977764459}
-  modelYawOffset: -90
-  showDebugLogs: 0
+  modelForward: 2
+  rotationSpeed: 5
 --- !u!114 &7832198342389132752
 MonoBehaviour:
   m_ObjectHideFlags: 0

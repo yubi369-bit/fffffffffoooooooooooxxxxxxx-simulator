@@ -8,14 +8,17 @@ public class EnemyChaser : MonoBehaviour
     public float detectRange = 15f;
     public float attackRange = 1.5f;
 
+    [Header("Y축 고정")]
+    [Tooltip("몬스터 Y좌표를 항상 이 값으로 고정")]
+    public float fixedY = 0f;
+
     [Header("회전 설정")]
-    [Tooltip("캐릭터 외형 오브젝트를 넣으세요.")]
     public Transform visualModel;
 
-    [Tooltip("캐릭터 모델의 정면 방향")]
-    public ModelForwardDirection modelForward = ModelForwardDirection.ForwardZ;
+    public ModelForwardDirection modelForward =
+        ModelForwardDirection.ForwardZ;
 
-    [Tooltip("0이면 즉시 회전, 그 이상이면 부드럽게 회전")]
+    [Tooltip("0이면 즉시 회전")]
     public float rotationSpeed = 0f;
 
     [Header("공격 설정")]
@@ -32,6 +35,7 @@ public class EnemyChaser : MonoBehaviour
 
     private Health health;
     private BoxCollider boxCollider;
+    private Rigidbody rb;
 
     private Transform player;
     private float lastAttackTime = -999f;
@@ -39,34 +43,49 @@ public class EnemyChaser : MonoBehaviour
     private Quaternion initialVisualRotation;
     private bool hasVisualModel;
 
-    private void Awake()
+    void Awake()
     {
         health = GetComponent<Health>();
         boxCollider = GetComponent<BoxCollider>();
-    }
-    void Start()
-    {
-        GameObject p = GameObject.FindWithTag("Player");
+        rb = GetComponent<Rigidbody>();
 
-        if (p != null)
+        // 물리 엔진이 Y좌표를 변경하지 못하도록 설정
+        if (rb != null)
         {
-            player = p.transform;
+            rb.useGravity = false;
+            rb.isKinematic = true;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
         }
 
+        // 시작부터 Y좌표를 0으로 고정
+        FixYPosition();
+    }
+
+    void Start()
+    {
+        FindPlayer();
+
         hasVisualModel =
-            visualModel != null && visualModel != transform;
+            visualModel != null &&
+            visualModel != transform;
 
         if (hasVisualModel)
         {
-            initialVisualRotation = visualModel.localRotation;
+            initialVisualRotation =
+                visualModel.localRotation;
         }
+
+        FixYPosition();
     }
 
     void Update()
     {
-        bool isEnemyDead = health.isEnemyDead;
+        // 매 프레임 Y좌표 고정
+        FixYPosition();
 
-        if (isEnemyDead)
+        // 사망 시 기존 처리 유지
+        if (health != null && health.isEnemyDead)
         {
             if (boxCollider != null)
             {
@@ -76,97 +95,160 @@ public class EnemyChaser : MonoBehaviour
             return;
         }
 
-        if (player == null) return;
+        if (player == null)
+        {
+            FindPlayer();
 
-        Vector3 toPlayer = player.position - transform.position;
+            if (player == null)
+                return;
+        }
 
-        // Y축 높이 차이는 무시
-        toPlayer.y = 0f;
+        // 플레이어의 X, Z 좌표만 사용
+        Vector3 targetPosition = new Vector3(
+            player.position.x,
+            fixedY,
+            player.position.z
+        );
+
+        Vector3 currentPosition = new Vector3(
+            transform.position.x,
+            fixedY,
+            transform.position.z
+        );
+
+        Vector3 toPlayer =
+            targetPosition - currentPosition;
 
         float distance = toPlayer.magnitude;
 
-        // 감지 범위를 벗어나면 대기
-        if (distance > detectRange) return;
+        if (distance > detectRange)
+            return;
 
-        if (distance < 0.001f) return;
+        if (distance < 0.001f)
+            return;
 
         Vector3 direction = toPlayer.normalized;
 
-        // 플레이어 방향으로 회전
+        // 플레이어 쪽을 바라보기
         RotateTowardsPlayer(direction);
 
         // 플레이어 추적
         if (distance > attackRange)
         {
-            float move = Mathf.Min(
+            float moveDistance = Mathf.Min(
                 moveSpeed * Time.deltaTime,
                 distance - attackRange
             );
 
-            transform.position += direction * move;
+            Vector3 nextPosition =
+                currentPosition +
+                direction * moveDistance;
+
+            // 이동 후에도 Y좌표는 0
+            nextPosition.y = fixedY;
+
+            transform.position = nextPosition;
         }
         else
         {
-            // 플레이어 공격
-            if (Time.time >= lastAttackTime + attackCooldown)
+            // 기존 근접 공격
+            if (Time.time >=
+                lastAttackTime + attackCooldown)
             {
                 lastAttackTime = Time.time;
 
-                Health health = player.GetComponent<Health>();
+                Health playerHealth =
+                    player.GetComponent<Health>();
 
-                if (health != null)
+                if (playerHealth != null)
                 {
-                    health.TakeDamage(damage);
+                    playerHealth.TakeDamage(damage);
                 }
             }
         }
     }
 
+    void LateUpdate()
+    {
+        // 다른 스크립트가 Y좌표를 변경해도 다시 고정
+        FixYPosition();
+    }
+
+    void FindPlayer()
+    {
+        GameObject p =
+            GameObject.FindGameObjectWithTag("Player");
+
+        if (p != null)
+        {
+            player = p.transform;
+        }
+    }
+
+    void FixYPosition()
+    {
+        Vector3 position = transform.position;
+
+        position.y = fixedY;
+
+        transform.position = position;
+    }
+
     void RotateTowardsPlayer(Vector3 direction)
     {
-        Quaternion lookRotation = Quaternion.LookRotation(
-            direction,
-            Vector3.up
-        );
+        Quaternion lookRotation =
+            Quaternion.LookRotation(
+                direction,
+                Vector3.up
+            );
 
         float correctionAngle = GetCorrectionAngle();
 
         if (hasVisualModel)
         {
-            // 부모는 플레이어 방향을 바라봄
             ApplyRotation(transform, lookRotation);
 
-            // 모델의 실제 정면 방향 보정
             visualModel.localRotation =
-                Quaternion.Euler(0f, correctionAngle, 0f)
-                * initialVisualRotation;
+                Quaternion.Euler(
+                    0f,
+                    correctionAngle,
+                    0f
+                ) * initialVisualRotation;
         }
         else
         {
-            // 모델이 부모 자체인 경우
             Quaternion correctedRotation =
                 lookRotation *
-                Quaternion.Euler(0f, correctionAngle, 0f);
+                Quaternion.Euler(
+                    0f,
+                    correctionAngle,
+                    0f
+                );
 
-            ApplyRotation(transform, correctedRotation);
+            ApplyRotation(
+                transform,
+                correctedRotation
+            );
         }
     }
 
-    void ApplyRotation(Transform target, Quaternion rotation)
+    void ApplyRotation(
+        Transform target,
+        Quaternion rotation
+    )
     {
         if (rotationSpeed <= 0f)
         {
-            // 즉시 플레이어 정면 바라보기
             target.rotation = rotation;
         }
         else
         {
-            // 부드럽게 회전
-            target.rotation = Quaternion.RotateTowards(
-                target.rotation,
-                rotation,
-                rotationSpeed * Time.deltaTime
-            );
+            transform.rotation =
+                Quaternion.RotateTowards(
+                    target.rotation,
+                    rotation,
+                    rotationSpeed * Time.deltaTime
+                );
         }
     }
 

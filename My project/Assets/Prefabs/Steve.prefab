@@ -208,6 +208,13 @@ MonoBehaviour:
   visualModel: {fileID: 103599441860339050}
   modelForward: 2
   rotationSpeed: 720
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  groundOffset: 0
+  snapToGroundOnStart: 1
+  groundCheckHeight: 30
+  groundCheckDistance: 100
   damage: 1
   attackCooldown: 1
 --- !u!65 &5357998583391665676
@@ -288,8 +295,8 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 0
+  m_UseGravity: 1
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
