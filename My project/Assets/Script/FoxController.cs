@@ -10,6 +10,13 @@ public class FoxController : MonoBehaviour
     public float runSpeed = 7f;
     public float gravity = -20f;
 
+    [Header("점프 설정")]
+    [Tooltip("점프 높이")]
+    public float jumpHeight = 1.8f;
+
+    [Tooltip("착지 상태일 때 아래로 유지하는 속도")]
+    public float groundedGravity = -2f;
+
     [Header("여우 모델")]
     public Transform foxModel;
 
@@ -34,6 +41,11 @@ public class FoxController : MonoBehaviour
     public Animator animator;
     public string speedParameter = "Speed";
 
+    [Tooltip("점프 애니메이션 사용 여부")]
+    public bool useJumpAnimation = false;
+
+    [Tooltip("Animator에 추가할 점프 Trigger 이름")]
+    public string jumpTriggerName = "Jump";
 
     private CharacterController controller;
 
@@ -46,8 +58,6 @@ public class FoxController : MonoBehaviour
 
     void Start()
     {
-
-
         controller = GetComponent<CharacterController>();
 
         if (animator == null)
@@ -56,7 +66,7 @@ public class FoxController : MonoBehaviour
         if (cameraTransform == null && Camera.main != null)
             cameraTransform = Camera.main.transform;
 
-        // 현재 카메라 위치와 각도를 그대로 저장
+        // 기존 카메라 위치와 각도 유지
         if (cameraTransform != null)
         {
             cameraYaw = cameraTransform.eulerAngles.y;
@@ -88,7 +98,13 @@ public class FoxController : MonoBehaviour
 
     void Update()
     {
-        if (GameManager.instance.isGameOver) return;
+        // 기존 게임오버 처리 유지
+        if (GameManager.instance != null &&
+            GameManager.instance.isGameOver)
+        {
+            return;
+        }
+
         HandleCursor();
         HandleMouseLook();
         HandleMovement();
@@ -97,7 +113,12 @@ public class FoxController : MonoBehaviour
 
     void LateUpdate()
     {
-        if (GameManager.instance.isGameOver) return;
+        if (GameManager.instance != null &&
+            GameManager.instance.isGameOver)
+        {
+            return;
+        }
+
         UpdateCamera();
     }
 
@@ -122,15 +143,15 @@ public class FoxController : MonoBehaviour
     {
         if (Mouse.current == null ||
             Cursor.lockState != CursorLockMode.Locked)
+        {
             return;
+        }
 
         Vector2 mouseDelta = Mouse.current.delta.ReadValue();
 
-        // 좌우 감도 적용
         float yawChange =
             mouseDelta.x * horizontalSensitivity;
 
-        // 상하 감도 적용
         float pitchChange =
             mouseDelta.y * verticalSensitivity;
 
@@ -146,7 +167,7 @@ public class FoxController : MonoBehaviour
             maxCameraAngle
         );
 
-        // 여우도 카메라와 함께 좌우 회전
+        // 카메라와 여우가 함께 좌우 회전
         transform.Rotate(
             0f,
             yawChange,
@@ -210,7 +231,8 @@ public class FoxController : MonoBehaviour
             cameraForward * input.y;
 
         moveDirection = Vector3.ClampMagnitude(
-            moveDirection, 1f
+            moveDirection,
+            1f
         );
 
         bool isMoving = input.sqrMagnitude > 0.01f;
@@ -220,14 +242,68 @@ public class FoxController : MonoBehaviour
 
         Vector3 movement = moveDirection * speed;
 
-        if (controller.isGrounded && verticalVelocity < 0f)
-            verticalVelocity = -2f;
+        // 바닥에 닿아 있을 때
+        if (controller.isGrounded)
+        {
+            if (verticalVelocity < 0f)
+            {
+                verticalVelocity = groundedGravity;
+            }
 
+            // Space 키를 누르면 점프
+            if (Keyboard.current != null &&
+                Keyboard.current.spaceKey.wasPressedThisFrame)
+            {
+                Jump();
+            }
+        }
+
+        // 중력 적용
         verticalVelocity += gravity * Time.deltaTime;
 
         movement.y = verticalVelocity;
 
-        controller.Move(movement * Time.deltaTime);
+        // 수평 이동과 점프를 한 번에 적용
+        controller.Move(
+            movement * Time.deltaTime
+        );
+    }
+
+    void Jump()
+    {
+        // 점프 높이에 맞는 초기 상승 속도 계산
+        float safeGravity = Mathf.Min(gravity, -0.01f);
+        float safeJumpHeight = Mathf.Max(0f, jumpHeight);
+
+        verticalVelocity = Mathf.Sqrt(
+            safeJumpHeight * -2f * safeGravity
+        );
+
+        if (useJumpAnimation)
+        {
+            PlayJumpAnimation();
+        }
+    }
+
+    void PlayJumpAnimation()
+    {
+        if (animator == null)
+            return;
+
+        // Jump Trigger가 실제로 있는지 확인
+        foreach (
+            AnimatorControllerParameter parameter
+            in animator.parameters
+        )
+        {
+            if (parameter.name == jumpTriggerName &&
+                parameter.type ==
+                AnimatorControllerParameterType.Trigger)
+            {
+                animator.SetTrigger(jumpTriggerName);
+                break;
+            }
+        }
     }
 
     void HandleAnimation()
@@ -243,7 +319,9 @@ public class FoxController : MonoBehaviour
         float targetSpeed = 0f;
 
         if (isMoving)
+        {
             targetSpeed = running ? 2f : 1f;
+        }
 
         animationSpeed = Mathf.MoveTowards(
             animationSpeed,
