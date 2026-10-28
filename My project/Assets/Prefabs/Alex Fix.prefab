@@ -770,6 +770,7 @@ GameObject:
   - component: {fileID: 3786450772177496262}
   - component: {fileID: 4670820703443858238}
   - component: {fileID: 1436996146735469633}
+  - component: {fileID: 5400062768307396170}
   m_Layer: 0
   m_Name: Alex Fix
   m_TagString: Enemy
@@ -908,6 +909,21 @@ MonoBehaviour:
   useAttackAnimation: 0
   attackTriggerName: Attack
   showDebugLogs: 0
+--- !u!114 &5400062768307396170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8496794334198716424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fa6499ac4f967743b9d33c5aff06556, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LootableEnemy
+  rewardType: 0
+  rewardValue: 1
+  interactionDistance: 3
 --- !u!1 &8788776671756012334
 GameObject:
   m_ObjectHideFlags: 0
