@@ -63,8 +63,7 @@ public class Health : MonoBehaviour
             );
         }
 
-        if (isEnemyTrigger &&
-            currentLootableEnemy != null)
+        if (isEnemyTrigger && currentLootableEnemy != null)
         {
             if (Input.GetKeyDown(KeyCode.E))
             {
@@ -161,15 +160,20 @@ public class Health : MonoBehaviour
             LootableEnemy target =
                 other.GetComponent<LootableEnemy>();
 
-            if (itemText != null)
-            {
-                itemText.SetActive(true);
-            }
+            Health enemyHealth = other.GetComponent<Health>(); 
 
-            if (target != null)
+            if (enemyHealth != null && enemyHealth.isEnemyDead)
             {
-                currentLootableEnemy = target;
-                isEnemyTrigger = true;
+                if (itemText != null)
+                {
+                    itemText.SetActive(true);
+                }
+
+                if (target != null)
+                {
+                    currentLootableEnemy = target;
+                    isEnemyTrigger = true;
+                }
             }
         }
     }
@@ -181,13 +185,17 @@ public class Health : MonoBehaviour
 
         if (other.CompareTag("Enemy"))
         {
-            if (itemText != null)
-            {
-                itemText.SetActive(false);
-            }
+            Health enemyHealth = other.GetComponent<Health>();
 
-            currentLootableEnemy = null;
-            isEnemyTrigger = false;
+            if (enemyHealth != null && enemyHealth.isEnemyDead)
+            {
+                if (itemText != null)
+                {
+                    itemText.SetActive(false);
+                }
+                currentLootableEnemy = null;
+                isEnemyTrigger = false;
+            }
         }
     }
 
